@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#100b1d">
+  <title>Scarlet SMP | Coin Portal</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #100b1d;
+      --panel: rgba(28, 20, 43, .92);
+      --panel2: #211630;
+      --red: #ff3158;
+      --red2: #c81943;
+      --text: #f8f3ff;
+      --muted: #b9abc9;
+      --border: rgba(255,255,255,.12);
+      --green: #63e6a3;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; color: var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(ellipse at 15% 5%, rgba(255,49,88,.18), transparent 36%),
+        radial-gradient(ellipse at 90% 80%, rgba(113,57,190,.2), transparent 40%), var(--bg);
+    }
+    .wrap { width: min(100% - 28px, 980px); margin: auto; padding: 24px 0 42px; }
+    header { display:flex; align-items:center; justify-content:space-between; gap:16px; padding: 8px 0 30px; }
+    .brand { display:flex; align-items:center; gap:12px; font-weight:900; letter-spacing:.5px; }
+    .logo { display:grid; place-items:center; width:46px; height:46px; border-radius:14px; background:linear-gradient(135deg,var(--red),#8f163e); box-shadow:0 8px 28px #ff315833; font-size:22px; }
+    .brand small { display:block; color:var(--muted); font-size:11px; font-weight:700; letter-spacing:2px; margin-top:2px; }
+    .pill { border:1px solid var(--border); border-radius:999px; padding:8px 12px; color:var(--muted); font-size:12px; white-space:nowrap; }
+    .hero { text-align:center; padding: 20px 0 30px; }
+    .eyebrow { display:inline-block; color:#ff8ba1; border:1px solid #ff315844; background:#ff315811; border-radius:999px; padding:7px 12px; font-size:11px; font-weight:800; letter-spacing:1.5px; }
+    h1 { font-size:clamp(32px, 7vw, 58px); line-height:1.05; margin:18px 0 12px; letter-spacing:-1.5px; }
+    h1 span { color:var(--red); }
+    .sub { max-width:580px; margin:0 auto; color:var(--muted); line-height:1.65; }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; align-items:start; }
+    .card { background:var(--panel); border:1px solid var(--border); border-radius:22px; padding:24px; box-shadow:0 20px 70px #0003; backdrop-filter:blur(12px); }
+    h2 { font-size:20px; margin:0 0 6px; }
+    .hint { color:var(--muted); font-size:13px; line-height:1.5; margin:0 0 20px; }
+    label { display:block; font-size:12px; color:#d7c9e7; margin:14px 0 7px; font-weight:700; }
+    input { width:100%; padding:13px 14px; border-radius:12px; background:#100b1d; color:var(--text); border:1px solid var(--border); outline:none; font:inherit; }
+    input:focus { border-color:var(--red); box-shadow:0 0 0 3px #ff31581c; }
+    button { cursor:pointer; border:0; border-radius:12px; padding:13px 16px; font:inherit; font-weight:800; color:white; background:linear-gradient(135deg,var(--red),var(--red2)); width:100%; margin-top:16px; }
+    button:disabled { opacity:.55; cursor:wait; }
+    .secondary { background:var(--panel2); border:1px solid var(--border); }
+    .switch { margin-top:16px; font-size:13px; color:var(--muted); text-align:center; }
+    .link { background:none; width:auto; margin:0; padding:0; color:#ff8098; border:0; }
+    .message { display:none; margin-top:14px; padding:11px 12px; border-radius:10px; font-size:13px; line-height:1.45; overflow-wrap:anywhere; }
+    .message.show { display:block; }
+    .message.info { background:#5b3d7b33; border:1px solid #9c7bc555; }
+    .message.success { background:#1c9b6222; border:1px solid #63e6a355; color:#b9ffda; }
+    .message.error { background:#ff31581a; border:1px solid #ff315866; color:#ffb6c4; }
+    .account { display:none; }
+    .account.show { display:block; }
+    .auth.hide { display:none; }
+    .profile-top { display:flex; align-items:center; gap:14px; margin:8px 0 20px; }
+    .avatar { width:54px; height:54px; display:grid; place-items:center; border-radius:16px; background:#ff31581c; border:1px solid #ff315855; font-size:26px; }
+    .profile-top p { margin:4px 0 0; color:var(--muted); font-size:13px; overflow-wrap:anywhere; }
+    .stat { background:#100b1d; border:1px solid var(--border); padding:18px; border-radius:16px; margin-top:12px; }
+    .stat-label { color:var(--muted); font-size:12px; }
+    .stat-value { font-size:28px; font-weight:900; margin-top:5px; }
+    .notice { margin-top:18px; border:1px solid #f3b64a55; background:#f3b64a12; color:#f5dba7; padding:13px; border-radius:12px; font-size:12px; line-height:1.55; }
+    .features { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:18px; }
+    .feature { border:1px solid var(--border); border-radius:16px; padding:17px; background:#ffffff05; }
+    .feature .emoji { font-size:22px; }
+    .feature strong { display:block; margin:9px 0 5px; font-size:13px; }
+    .feature p { color:var(--muted); font-size:12px; line-height:1.5; margin:0; }
+    footer { text-align:center; color:#8d7e9f; font-size:12px; margin-top:28px; }
+    @media(max-width:700px) { .grid {grid-template-columns:1fr;} .features {grid-template-columns:1fr;} header {align-items:flex-start;} .pill {font-size:10px;} .card {padding:20px;} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand"><div class="logo">✦</div><div>SCARLET SMP<small>PLAYER COIN PORTAL</small></div></div>
+      <div class="pill">● Community Portal</div>
+    </header>
+
+    <section class="hero">
+      <div class="eyebrow">WELCOME TO THE NETWORK</div>
+      <h1>Your world.<br><span>Your rewards.</span></h1>
+      <p class="sub">Sign in to your Scarlet SMP account and connect your Minecraft username. Your player dashboard is the first step toward the Scarlet coin system.</p>
+    </section>
+
+    <div class="grid">
+      <section class="card auth" id="authCard">
+        <h2 id="formTitle">Create your account</h2>
+        <p class="hint" id="formHint">Register with your email and Minecraft username to get started.</p>
+        <form id="authForm">
+          <div id="usernameWrap">
+            <label for="mcname">Minecraft username</label>
+            <input id="mcname" name="mcname" autocomplete="username" maxlength="16" placeholder="YourMinecraftName" pattern="[A-Za-z0-9_]{3,16}">
+          </div>
+          <label for="email">Email address</label>
+          <input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" minlength="6" placeholder="At least 6 characters" required>
+          <button id="submitBtn" type="submit">Create account</button>
+        </form>
+        <div class="switch" id="switchText">Already registered? <button class="link" type="button" id="switchBtn">Sign in</button></div>
+        <div class="message" id="authMessage" role="status" aria-live="polite"></div>
+      </section>
+
+      <section class="card account" id="accountCard">
+        <h2>Your player dashboard</h2>
+        <p class="hint">You are signed in to Scarlet SMP.</p>
+        <div class="profile-top">
+          <div class="avatar">⚔</div>
+          <div><strong id="displayName">Player</strong><p id="displayEmail"></p></div>
+        </div>
+        <div class="stat"><div class="stat-label">SCARLET COIN BALANCE</div><div class="stat-value">Not connected yet</div></div>
+        <div class="notice">Your account login is connected. The live coin balance and redeem-to-Minecraft feature still need a secure backend/server integration; this page will not invent or change coin balances.</div>
+        <button class="secondary" id="logoutBtn" type="button">Sign out</button>
+        <div class="message" id="accountMessage" role="status" aria-live="polite"></div>
+      </section>
+
+      <section class="card">
+        <h2>Portal features</h2>
+        <p class="hint">A home for your Scarlet SMP player account.</p>
+        <div class="features" style="grid-template-columns:1fr">
+          <div class="feature"><div class="emoji">🛡️</div><strong>Account access</strong><p>Register and sign in with your email and password.</p></div>
+          <div class="feature"><div class="emoji">⛏️</div><strong>Minecraft profile</strong><p>Save your Minecraft username during registration.</p></div>
+          <div class="feature"><div class="emoji">🪙</div><strong>Coin system</strong><p>Wallet balance and redemptions become active after secure server-side integration.</p></div>
+        </div>
+      </section>
+    </div>
+    <footer>SCARLET SMP · Unofficial player portal</footer>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+    const SUPABASE_URL = "https://vpiuejwgubbqybairtkq.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_rB3-zv2cmehgJRu7kWIvyA_HZ2vJrYh";
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const authForm = document.getElementById('authForm');
+    const authCard = document.getElementById('authCard');
+    const accountCard = document.getElementById('accountCard');
+    const usernameWrap = document.getElementById('usernameWrap');
+    const mcname = document.getElementById('mcname');
+    const email = document.getElementById('email');
+    const password = document.getElementById('password');
+    const submitBtn = document.getElementById('submitBtn');
+    const authMessage = document.getElementById('authMessage');
+    const accountMessage = document.getElementById('accountMessage');
+    let isSignUp = true;
+
+    function showMessage(el, text, type = 'info') {
+      el.textContent = text;
+      el.className = `message show ${type}`;
+    }
+    function clearMessage(el) {
+      el.textContent = '';
+      el.className = 'message';
+    }
+    function setMode(signUp) {
+      isSignUp = signUp;
+      clearMessage(authMessage);
+      document.getElementById('formTitle').textContent = signUp ? 'Create your account' : 'Welcome back';
+      document.getElementById('formHint').textContent = signUp
+        ? 'Register with your email and Minecraft username to get started.'
+        : 'Sign in with the email and password you registered with.';
+      usernameWrap.style.display = signUp ? 'block' : 'none';
+      mcname.required = signUp;
+      submitBtn.textContent = signUp ? 'Create account' : 'Sign in';
+      document.getElementById('switchText').firstChild.textContent = signUp ? 'Already registered? ' : 'New to Scarlet SMP? ';
+      document.getElementById('switchBtn').textContent = signUp ? 'Sign in' : 'Create account';
+      password.autocomplete = signUp ? 'new-password' : 'current-password';
+    }
+    document.getElementById('switchBtn').addEventListener('click', () => setMode(!isSignUp));
+
+    function showAccount(user) {
+      authCard.classList.add('hide');
+      accountCard.classList.add('show');
+      const metadata = user.user_metadata || {};
+      document.getElementById('displayName').textContent = metadata.minecraft_username || 'Scarlet Player';
+      document.getElementById('displayEmail').textContent = user.email || '';
+    }
+    function showAuth() {
+      accountCard.classList.remove('show');
+      authCard.classList.remove('hide');
+    }
+
+    authForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      clearMessage(authMessage);
+      submitBtn.disabled = true;
+      submitBtn.textContent = isSignUp ? 'Creating account…' : 'Signing in…';
+      try {
+        const emailValue = email.value.trim();
+        const passwordValue = password.value;
+        if (isSignUp) {
+          const username = mcname.value.trim();
+          if (!/^[A-Za-z0-9_]{3,16}$/.test(username)) {
+            throw new Error('Minecraft username must be 3–16 characters and use only letters, numbers, or underscores.');
+          }
+          const { data, error } = await supabase.auth.signUp({
+            email: emailValue,
+            password: passwordValue,
+            options: { data: { minecraft_username: username } }
+          });
+          if (error) throw error;
+          if (data.session && data.user) {
+            showAccount(data.user);
+          } else {
+            showMessage(authMessage, 'Account created. Check your email for the confirmation link, then return here and sign in.', 'success');
+            setMode(false);
+          }
+        } else {
+          const { data, error } = await supabase.auth.signInWithPassword({
+            email: emailValue,
+            password: passwordValue
+          });
+          if (error) throw error;
+          if (data.user) showAccount(data.user);
+          showMessage(accountMessage, 'You are signed in successfully.', 'success');
+        }
+      } catch (error) {
+        showMessage(authMessage, error.message || 'Something went wrong. Please try again.', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = isSignUp ? 'Create account' : 'Sign in';
+      }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        showMessage(accountMessage, error.message, 'error');
+        return;
+      }
+      clearMessage(accountMessage);
+      showAuth();
+      setMode(false);
+      showMessage(authMessage, 'You have signed out.', 'success');
+    });
+
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) showAccount(session.user);
+    supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) showAccount(session.user);
+    });
+  </script>
+</body>
+    </html>
