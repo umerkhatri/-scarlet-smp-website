@@ -99,7 +99,7 @@
     footer { border-top:1px solid var(--line); padding:22px 0 30px; color:var(--muted); font-size:12px; }
     .footer-inner { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
     @media(max-width:760px) {
-      .hero { grid-template-columns:1fr; padding-top:35px; }
+     .hero { grid-template-columns:1fr; padding-top:35px; }
       .grid { grid-template-columns:1fr; }
       .nav { align-items:flex-start; }
       .status { font-size:11px; }
@@ -209,177 +209,184 @@
     <div class="wrap footer-inner"><span>© <span id="year"></span> Scarlet SMP</span><span>Unofficial player portal interface</span></div>
   </footer>
 
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    (() => {
+      const $ = (id) => document.getElementById(id);
+      const authForm = $('authForm');
+      const authTabs = $('authTabs');
+      const loginTab = $('loginTab');
+      const signupTab = $('signupTab');
+      const usernameField = $('usernameField');
+      const minecraftUsername = $('minecraftUsername');
+      const emailInput = $('email');
+      const passwordInput = $('password');
+      const submitBtn = $('submitBtn');
+      const authMessage = $('authMessage');
+      const signedOutPanel = $('signedOutPanel');
+      const signedInPanel = $('signedInPanel');
+      const displayUsername = $('displayUsername');
+      const displayEmail = $('displayEmail');
+      const profileStatus = $('profileStatus');
+      const profileMessage = $('profileMessage');
+      const logoutBtn = $('logoutBtn');
+      let mode = 'login';
+      let supabase = null;
+      $('year').textContent = new Date().getFullYear();
 
-    // These are the project's public browser credentials. Never put a service_role/secret key here.
-    const SUPABASE_URL = 'https://vpiuejwgubbqybairtkq.supabase.co';
-    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_rB3-zv2cmehgJRu7kWIvyA_HZ2vJrYh';
-    const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-
-    const authForm = document.getElementById('authForm');
-    const authTabs = document.getElementById('authTabs');
-    const loginTab = document.getElementById('loginTab');
-    const signupTab = document.getElementById('signupTab');
-    const usernameField = document.getElementById('usernameField');
-    const minecraftUsername = document.getElementById('minecraftUsername');
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const submitBtn = document.getElementById('submitBtn');
-    const authMessage = document.getElementById('authMessage');
-    const signedOutPanel = document.getElementById('signedOutPanel');
-    const signedInPanel = document.getElementById('signedInPanel');
-    const displayUsername = document.getElementById('displayUsername');
-    const displayEmail = document.getElementById('displayEmail');
-    const profileStatus = document.getElementById('profileStatus');
-    const profileMessage = document.getElementById('profileMessage');
-    const logoutBtn = document.getElementById('logoutBtn');
-
-    let mode = 'login';
-    document.getElementById('year').textContent = new Date().getFullYear();
-
-    function showMessage(element, message, type = 'info') {
-      element.textContent = message;
-      element.className = `message show ${type}`;
-    }
-
-    function clearMessage(element) {
-      element.textContent = '';
-      element.className = 'message';
-    }
-
-    function setMode(nextMode) {
-      mode = nextMode;
-      const isSignup = mode === 'signup';
-      loginTab.classList.toggle('active', !isSignup);
-      signupTab.classList.toggle('active', isSignup);
-      usernameField.classList.toggle('hidden', !isSignup);
-      minecraftUsername.required = isSignup;
-      passwordInput.autocomplete = isSignup ? 'new-password' : 'current-password';
-      submitBtn.textContent = isSignup ? 'Create Account' : 'Log In';
-      document.querySelector('#authHeading h2').textContent = isSignup ? 'Create your account' : 'Welcome back';
-      document.querySelector('#authHeading .sub').textContent = isSignup
-        ? 'Use your email and Minecraft username to register.'
-        : 'Sign in to your Scarlet SMP player account.';
-      clearMessage(authMessage);
-    }
-
-    loginTab.addEventListener('click', () => setMode('login'));
-    signupTab.addEventListener('click', () => setMode('signup'));
-
-    function showLoggedOut() {
-      signedInPanel.classList.add('hidden');
-      signedOutPanel.classList.remove('hidden');
-      authTabs.classList.remove('hidden');
-      authForm.classList.remove('hidden');
-      document.getElementById('authHeading').classList.remove('hidden');
-    }
-
-    function showLoggedIn(user) {
-      signedOutPanel.classList.add('hidden');
-      signedInPanel.classList.remove('hidden');
-      authTabs.classList.add('hidden');
-      authForm.classList.add('hidden');
-      document.getElementById('authHeading').classList.add('hidden');
-      displayEmail.textContent = user.email || 'Email unavailable';
-      const username = user.user_metadata?.minecraft_username || 'Minecraft username not found';
-      displayUsername.textContent = username;
-      profileStatus.textContent = 'Saving…';
-      clearMessage(profileMessage);
-    }
-
-    async function savePlayerProfile(user) {
-      const username = user.user_metadata?.minecraft_username;
-      if (!username) {
-        profileStatus.textContent = 'Needs username';
-        showMessage(profileMessage, 'This account does not have a Minecraft username saved in its sign-up details. Tell us this message and we can add a way to update it.', 'info');
-        return;
+      function showMessage(element, message, type = 'info') {
+        element.textContent = message;
+        element.className = `message show ${type}`;
       }
+      function clearMessage(element) {
+        element.textContent = '';
+        element.className = 'message';
+      }
+      function setMode(nextMode) {
+        mode = nextMode;
+        const isSignup = mode === 'signup';
+        loginTab.classList.toggle('active', !isSignup);
+        signupTab.classList.toggle('active', isSignup);
+        usernameField.classList.toggle('hidden', !isSignup);
+        minecraftUsername.required = isSignup;
+        passwordInput.autocomplete = isSignup ? 'new-password' : 'current-password';
+        submitBtn.textContent = isSignup ? 'Create Account' : 'Log In';
+        $('authHeading').querySelector('h2').textContent = isSignup ? 'Create your account' : 'Welcome back';
+        $('authHeading').querySelector('.sub').textContent = isSignup
+          ? 'Use your email and Minecraft username to register.'
+          : 'Sign in to your Scarlet SMP player account.';
+        clearMessage(authMessage);
+      }
+      loginTab.addEventListener('click', () => setMode('login'));
+      signupTab.addEventListener('click', () => setMode('signup'));
 
-      const { error } = await supabase
-        .from('player_profiles')
-        .upsert(
+      function showLoggedOut() {
+        signedInPanel.classList.add('hidden');
+        signedOutPanel.classList.remove('hidden');
+        authTabs.classList.remove('hidden');
+        authForm.classList.remove('hidden');
+        $('authHeading').classList.remove('hidden');
+      }
+      function showLoggedIn(user) {
+        signedOutPanel.classList.add('hidden');
+        signedInPanel.classList.remove('hidden');
+        authTabs.classList.add('hidden');
+        authForm.classList.add('hidden');
+        $('authHeading').classList.add('hidden');
+        displayEmail.textContent = user.email || 'Email unavailable';
+        displayUsername.textContent = user.user_metadata?.minecraft_username || 'Minecraft username not found';
+        profileStatus.textContent = 'Checking…';
+        clearMessage(profileMessage);
+      }
+      async function savePlayerProfile(user) {
+        const username = user.user_metadata?.minecraft_username;
+        if (!username) {
+          profileStatus.textContent = 'Needs username';
+          showMessage(profileMessage, 'This account has no Minecraft username in its sign-up details. Login is working, but the profile needs a username update.', 'info');
+          return;
+        }
+        const { error } = await supabase.from('player_profiles').upsert(
           { user_id: user.id, minecraft_username: username },
           { onConflict: 'user_id' }
         );
-
-      if (error) {
-        profileStatus.textContent = 'Not saved';
-        showMessage(profileMessage, `Could not save your profile: ${error.message}`, 'error');
-        return;
-      }
-
-      profileStatus.textContent = 'Saved';
-      showMessage(profileMessage, 'Your Minecraft username was saved to your player profile.', 'success');
-    }
-
-    async function finishLogin(user) {
-      showLoggedIn(user);
-      await savePlayerProfile(user);
-    }
-
-    authForm.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      clearMessage(authMessage);
-      submitBtn.disabled = true;
-      submitBtn.textContent = mode === 'signup' ? 'Creating account…' : 'Logging in…';
-
-      try {
-        const email = emailInput.value.trim();
-        const password = passwordInput.value;
-
-        if (mode === 'signup') {
-          const username = minecraftUsername.value.trim();
-          if (!/^[A-Za-z0-9_]{3,16}$/.test(username)) {
-            showMessage(authMessage, 'Minecraft username must be 3–16 characters and use only letters, numbers, or underscores.', 'error');
-            return;
-          }
-
-          const { data, error } = await supabase.auth.signUp({
-            email,
-            password,
-            options: { data: { minecraft_username: username } }
-          });
-
-          if (error) {
-            showMessage(authMessage, error.message, 'error');
-            return;
-          }
-
-          if (data.session && data.user) {
-            showMessage(authMessage, 'Account created successfully.', 'success');
-            await finishLogin(data.user);
-          } else {
-            showMessage(authMessage, 'Account created. Check your email for the confirmation link, confirm it, then return here and log in.', 'success');
-            setMode('login');
-          }
-        } else {
-          const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-          if (error) {
-            showMessage(authMessage, error.message, 'error');
-            return;
-          }
-          if (data.user) {
-            showMessage(authMessage, 'Login successful.', 'success');
-            await finishLogin(data.user);
-          }
-        }
-      } catch (error) {
-        showMessage(authMessage, error?.message || 'Something went wrong. Please try again.', 'error');
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = mode === 'signup' ? 'Create Account' : 'Log In';
-      }
-    });
-
-    logoutBtn.addEventListener('click', async () => {
-      logoutBtn.disabled = true;
-      try {
-        const { error } = await supabase.auth.signOut();
         if (error) {
-          showMessage(profileMessage, error.message, 'error');
+          profileStatus.textContent = 'Not saved';
+          showMessage(profileMessage, 'Login worked, but profile saving failed: ' + error.message, 'error');
           return;
         }
+        profileStatus.textContent = 'Saved';
+        showMessage(profileMessage, 'Your Minecraft username was saved to your player profile.', 'success');
+      }
+      async function finishLogin(user) {
+        showLoggedIn(user);
+        // Do not delay the dashboard while the profile request completes.
+        savePlayerProfile(user).catch((error) => {
+          profileStatus.textContent = 'Not saved';
+          showMessage(profileMessage, error?.message || 'Could not save the player profile.', 'error');
+        });
+      }
+
+      authForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        clearMessage(authMessage);
+        if (!supabase) {
+          showMessage(authMessage, 'The login service could not load. Check your internet connection and reload this page.', 'error');
+          return;
+        }
+        submitBtn.disabled = true;
+        submitBtn.textContent = mode === 'signup' ? 'Creating account…' : 'Logging in…';
+        try {
+          const email = emailInput.value.trim();
+          const password = passwordInput.value;
+          if (mode === 'signup') {
+            const username = minecraftUsername.value.trim();
+            if (!/^[A-Za-z0-9_]{3,16}$/.test(username)) {
+              showMessage(authMessage, 'Minecraft username must be 3–16 characters and use only letters, numbers, or underscores.', 'error');
+              return;
+            }
+            const { data, error } = await supabase.auth.signUp({
+              email, password, options: { data: { minecraft_username: username } }
+            });
+            if (error) throw error;
+            if (data.session && data.user) {
+              showMessage(authMessage, 'Account created successfully.', 'success');
+              await finishLogin(data.user);
+            } else {
+              showMessage(authMessage, 'Account created. Check your email for the confirmation link, then come back and log in.', 'success');
+              setMode('login');
+            }
+          } else {
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+            if (data.user) {
+              showMessage(authMessage, 'Login successful.', 'success');
+              await finishLogin(data.user);
+            }
+          }
+        } catch (error) {
+          showMessage(authMessage, error?.message || 'Something went wrong. Please try again.', 'error');
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = mode === 'signup' ? 'Create Account' : 'Log In';
+        }
+      });
+
+      logoutBtn.addEventListener('click', async () => {
+        if (!supabase) return;
+        logoutBtn.disabled = true;
+        try {
+          const { error } = await supabase.auth.signOut();
+          if (error) throw error;
+          showLoggedOut();
+          setMode('login');
+          clearMessage(authMessage);
+        } catch (error) {
+          showMessage(profileMessage, error?.message || 'Could not log out. Please try again.', 'error');
+        } finally {
+          logoutBtn.disabled = false;
+        }
+      });
+
+      // Initialize Supabase after the page controls are ready, so the tabs still respond if the CDN fails.
+      if (!window.supabase?.createClient) {
+        showMessage(authMessage, 'The login library did not load. Check your internet connection, then refresh the page.', 'error');
         showLoggedOut();
-        setMode('login');
-          
+        return;
+      }
+      const SUPABASE_URL = 'https://vpiuejwgubbqybairtkq.supabase.co';
+      const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_rB3-zv2cmehgJRu7kWIvyA_HZ2vJrYh';
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+      supabase.auth.getSession().then(({ data, error }) => {
+        if (error) showMessage(authMessage, error.message, 'error');
+        if (data?.session?.user) finishLogin(data.session.user);
+        else showLoggedOut();
+      }).catch((error) => showMessage(authMessage, error?.message || 'Could not restore your session.', 'error'));
+
+      supabase.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_OUT' || !session?.user) showLoggedOut();
+      });
+    })();
+  </script>
+</body>
+</html>
