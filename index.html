@@ -3,248 +3,383 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#100b1d">
-  <title>Scarlet SMP | Coin Portal</title>
+  <meta name="theme-color" content="#100b16">
+  <title>Scarlet SMP | Player Portal</title>
   <style>
     :root {
-      color-scheme: dark;
-      --bg: #100b1d;
-      --panel: rgba(28, 20, 43, .92);
-      --panel2: #211630;
-      --red: #ff3158;
-      --red2: #c81943;
-      --text: #f8f3ff;
-      --muted: #b9abc9;
-      --border: rgba(255,255,255,.12);
-      --green: #63e6a3;
+      --bg: #100b16;
+      --panel: #1a1122;
+      --panel-2: #21152b;
+      --line: rgba(255,255,255,.10);
+      --text: #f7f2fb;
+      --muted: #b8a9c4;
+      --red: #ff3157;
+      --red-dark: #c9153b;
+      --green: #52e0a1;
+      --yellow: #ffd166;
+      --radius: 18px;
+      --shadow: 0 18px 55px rgba(0,0,0,.28);
     }
     * { box-sizing: border-box; }
     body {
-      margin: 0; min-height: 100vh; color: var(--text);
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
       background:
-        radial-gradient(ellipse at 15% 5%, rgba(255,49,88,.18), transparent 36%),
-        radial-gradient(ellipse at 90% 80%, rgba(113,57,190,.2), transparent 40%), var(--bg);
+        radial-gradient(circle at 12% 0%, rgba(255,49,87,.18), transparent 32rem),
+        radial-gradient(circle at 90% 20%, rgba(125,55,180,.16), transparent 28rem),
+        var(--bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
-    .wrap { width: min(100% - 28px, 980px); margin: auto; padding: 24px 0 42px; }
-    header { display:flex; align-items:center; justify-content:space-between; gap:16px; padding: 8px 0 30px; }
+    a { color: #ff8096; }
+    .wrap { width: min(1100px, calc(100% - 32px)); margin: 0 auto; }
+    header {
+      padding: 20px 0;
+      border-bottom: 1px solid var(--line);
+      background: rgba(16,11,22,.72);
+      backdrop-filter: blur(12px);
+    }
+    .nav { display:flex; align-items:center; justify-content:space-between; gap:16px; }
     .brand { display:flex; align-items:center; gap:12px; font-weight:900; letter-spacing:.5px; }
-    .logo { display:grid; place-items:center; width:46px; height:46px; border-radius:14px; background:linear-gradient(135deg,var(--red),#8f163e); box-shadow:0 8px 28px #ff315833; font-size:22px; }
+    .logo {
+      display:grid; place-items:center; width:42px; height:42px; border-radius:13px;
+      background: linear-gradient(145deg, #ff3157, #8b102f); box-shadow: 0 8px 24px rgba(255,49,87,.25);
+      font-size:21px;
+    }
     .brand small { display:block; color:var(--muted); font-size:11px; font-weight:700; letter-spacing:2px; margin-top:2px; }
-    .pill { border:1px solid var(--border); border-radius:999px; padding:8px 12px; color:var(--muted); font-size:12px; white-space:nowrap; }
-    .hero { text-align:center; padding: 20px 0 30px; }
-    .eyebrow { display:inline-block; color:#ff8ba1; border:1px solid #ff315844; background:#ff315811; border-radius:999px; padding:7px 12px; font-size:11px; font-weight:800; letter-spacing:1.5px; }
-    h1 { font-size:clamp(32px, 7vw, 58px); line-height:1.05; margin:18px 0 12px; letter-spacing:-1.5px; }
+    .status { display:inline-flex; align-items:center; gap:8px; color:#d9d0e1; font-size:13px; }
+    .dot { width:8px; height:8px; background:var(--green); border-radius:50%; box-shadow:0 0 12px rgba(82,224,161,.65); }
+    .hero { padding:48px 0 28px; display:grid; grid-template-columns:1.2fr .8fr; gap:26px; align-items:center; }
+    .eyebrow { color:#ff8298; font-weight:800; text-transform:uppercase; letter-spacing:2.5px; font-size:11px; }
+    h1 { font-size:clamp(34px, 5vw, 58px); line-height:1.03; margin:13px 0 16px; letter-spacing:-1.8px; }
     h1 span { color:var(--red); }
-    .sub { max-width:580px; margin:0 auto; color:var(--muted); line-height:1.65; }
-    .grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; align-items:start; }
-    .card { background:var(--panel); border:1px solid var(--border); border-radius:22px; padding:24px; box-shadow:0 20px 70px #0003; backdrop-filter:blur(12px); }
-    h2 { font-size:20px; margin:0 0 6px; }
-    .hint { color:var(--muted); font-size:13px; line-height:1.5; margin:0 0 20px; }
-    label { display:block; font-size:12px; color:#d7c9e7; margin:14px 0 7px; font-weight:700; }
-    input { width:100%; padding:13px 14px; border-radius:12px; background:#100b1d; color:var(--text); border:1px solid var(--border); outline:none; font:inherit; }
-    input:focus { border-color:var(--red); box-shadow:0 0 0 3px #ff31581c; }
-    button { cursor:pointer; border:0; border-radius:12px; padding:13px 16px; font:inherit; font-weight:800; color:white; background:linear-gradient(135deg,var(--red),var(--red2)); width:100%; margin-top:16px; }
-    button:disabled { opacity:.55; cursor:wait; }
-    .secondary { background:var(--panel2); border:1px solid var(--border); }
-    .switch { margin-top:16px; font-size:13px; color:var(--muted); text-align:center; }
-    .link { background:none; width:auto; margin:0; padding:0; color:#ff8098; border:0; }
-    .message { display:none; margin-top:14px; padding:11px 12px; border-radius:10px; font-size:13px; line-height:1.45; overflow-wrap:anywhere; }
+    .intro { color:var(--muted); line-height:1.75; max-width:590px; margin:0; }
+    .hero-box { border:1px solid rgba(255,49,87,.24); border-radius:var(--radius); padding:23px; background:linear-gradient(145deg, rgba(255,49,87,.11), rgba(255,255,255,.025)); box-shadow:var(--shadow); }
+    .hero-box h3 { margin:0 0 8px; font-size:17px; }
+    .hero-box p { margin:0; color:var(--muted); line-height:1.65; font-size:14px; }
+    .section-title { display:flex; align-items:end; justify-content:space-between; gap:12px; margin:22px 0 14px; }
+    .section-title h2 { margin:0; font-size:22px; }
+    .section-title p { margin:5px 0 0; color:var(--muted); font-size:13px; }
+    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; padding-bottom:36px; }
+    .card { background:linear-gradient(155deg, rgba(35,23,45,.96), rgba(23,15,31,.96)); border:1px solid var(--line); border-radius:var(--radius); padding:22px; box-shadow:var(--shadow); min-width:0; }
+    .card h2, .card h3 { margin:0 0 7px; }
+    .sub { color:var(--muted); font-size:13px; line-height:1.6; margin:0 0 18px; }
+    .tabs { display:flex; gap:8px; padding:5px; background:#120c19; border:1px solid var(--line); border-radius:12px; margin:18px 0; }
+    .tab { flex:1; border:0; color:var(--muted); background:transparent; padding:10px 12px; border-radius:8px; cursor:pointer; font-weight:800; }
+    .tab.active { color:white; background:var(--red-dark); }
+    label { display:block; color:#e7dced; font-size:12px; font-weight:800; margin:14px 0 7px; }
+    input {
+      display:block; width:100%; padding:13px 14px; border:1px solid rgba(255,255,255,.12);
+      background:#110b17; color:var(--text); border-radius:10px; outline:none; font:inherit; font-size:14px;
+    }
+    input:focus { border-color:var(--red); box-shadow:0 0 0 3px rgba(255,49,87,.12); }
+    .btn { width:100%; margin-top:16px; border:0; border-radius:11px; padding:13px 16px; color:white; cursor:pointer; font-weight:900; font-size:14px; background:linear-gradient(100deg,var(--red),var(--red-dark)); box-shadow:0 8px 22px rgba(255,49,87,.18); }
+    .btn:disabled { opacity:.6; cursor:wait; }
+    .btn.secondary { background:#302039; box-shadow:none; border:1px solid var(--line); }
+    .message { display:none; margin-top:14px; border-radius:10px; padding:12px; font-size:13px; line-height:1.5; overflow-wrap:anywhere; }
     .message.show { display:block; }
-    .message.info { background:#5b3d7b33; border:1px solid #9c7bc555; }
-    .message.success { background:#1c9b6222; border:1px solid #63e6a355; color:#b9ffda; }
-    .message.error { background:#ff31581a; border:1px solid #ff315866; color:#ffb6c4; }
-    .account { display:none; }
-    .account.show { display:block; }
-    .auth.hide { display:none; }
-    .profile-top { display:flex; align-items:center; gap:14px; margin:8px 0 20px; }
-    .avatar { width:54px; height:54px; display:grid; place-items:center; border-radius:16px; background:#ff31581c; border:1px solid #ff315855; font-size:26px; }
-    .profile-top p { margin:4px 0 0; color:var(--muted); font-size:13px; overflow-wrap:anywhere; }
-    .stat { background:#100b1d; border:1px solid var(--border); padding:18px; border-radius:16px; margin-top:12px; }
-    .stat-label { color:var(--muted); font-size:12px; }
-    .stat-value { font-size:28px; font-weight:900; margin-top:5px; }
-    .notice { margin-top:18px; border:1px solid #f3b64a55; background:#f3b64a12; color:#f5dba7; padding:13px; border-radius:12px; font-size:12px; line-height:1.55; }
-    .features { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:18px; }
-    .feature { border:1px solid var(--border); border-radius:16px; padding:17px; background:#ffffff05; }
-    .feature .emoji { font-size:22px; }
-    .feature strong { display:block; margin:9px 0 5px; font-size:13px; }
-    .feature p { color:var(--muted); font-size:12px; line-height:1.5; margin:0; }
-    footer { text-align:center; color:#8d7e9f; font-size:12px; margin-top:28px; }
-    @media(max-width:700px) { .grid {grid-template-columns:1fr;} .features {grid-template-columns:1fr;} header {align-items:flex-start;} .pill {font-size:10px;} .card {padding:20px;} }
+    .message.error { color:#ffdbe2; background:rgba(255,49,87,.12); border:1px solid rgba(255,49,87,.28); }
+    .message.success { color:#d8ffed; background:rgba(82,224,161,.09); border:1px solid rgba(82,224,161,.25); }
+    .message.info { color:#ffefc1; background:rgba(255,209,102,.08); border:1px solid rgba(255,209,102,.23); }
+    .hidden { display:none !important; }
+    .account-top { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+    .pill { display:inline-flex; align-items:center; gap:7px; padding:7px 10px; border-radius:999px; border:1px solid rgba(82,224,161,.25); color:#9df3ca; background:rgba(82,224,161,.08); font-size:11px; font-weight:800; }
+    .profile-name { font-size:23px; font-weight:900; margin:13px 0 4px; overflow-wrap:anywhere; }
+    .muted { color:var(--muted); font-size:13px; overflow-wrap:anywhere; }
+    .stats { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:22px; }
+    .stat { padding:16px; background:rgba(0,0,0,.18); border:1px solid var(--line); border-radius:13px; }
+    .stat span { color:var(--muted); font-size:12px; display:block; margin-bottom:7px; }
+    .stat strong { font-size:20px; }
+    .notice { margin-top:14px; padding:12px 13px; border-radius:10px; color:#e3d7ec; background:rgba(255,255,255,.04); border:1px solid var(--line); font-size:12px; line-height:1.6; }
+    .feature-list { display:grid; gap:12px; margin-top:17px; }
+    .feature { display:flex; gap:12px; align-items:flex-start; padding:13px; border:1px solid var(--line); border-radius:12px; background:rgba(0,0,0,.12); }
+    .feature-icon { width:34px; height:34px; display:grid; place-items:center; flex:0 0 auto; border-radius:10px; background:rgba(255,49,87,.12); }
+    .feature strong { display:block; font-size:13px; margin-bottom:4px; }
+    .feature span { display:block; color:var(--muted); font-size:12px; line-height:1.5; }
+    footer { border-top:1px solid var(--line); padding:22px 0 30px; color:var(--muted); font-size:12px; }
+    .footer-inner { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+    @media(max-width:760px) {
+      .hero { grid-template-columns:1fr; padding-top:35px; }
+      .grid { grid-template-columns:1fr; }
+      .nav { align-items:flex-start; }
+      .status { font-size:11px; }
+      .card { padding:18px; }
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div class="brand"><div class="logo">✦</div><div>SCARLET SMP<small>PLAYER COIN PORTAL</small></div></div>
-      <div class="pill">● Community Portal</div>
-    </header>
+  <header>
+    <div class="wrap nav">
+      <div class="brand">
+        <div class="logo">S</div>
+        <div>SCARLET SMP<small>PLAYER PORTAL</small></div>
+      </div>
+      <div class="status"><span class="dot"></span> Community Portal</div>
+    </div>
+  </header>
 
+  <main class="wrap">
     <section class="hero">
-      <div class="eyebrow">WELCOME TO THE NETWORK</div>
-      <h1>Your world.<br><span>Your rewards.</span></h1>
-      <p class="sub">Sign in to your Scarlet SMP account and connect your Minecraft username. Your player dashboard is the first step toward the Scarlet coin system.</p>
+      <div>
+        <div class="eyebrow">Welcome to the network</div>
+        <h1>Your world.<br><span>Your adventure.</span></h1>
+        <p class="intro">Sign in to your Scarlet SMP player account. Connect your Minecraft username and access your player dashboard from one place.</p>
+      </div>
+      <div class="hero-box">
+        <h3>⚔ Scarlet SMP Portal</h3>
+        <p>Create your account with your email and Minecraft username. Use the same email whenever you sign in. If email confirmation is enabled, confirm your email before logging in.</p>
+      </div>
     </section>
 
-    <div class="grid">
-      <section class="card auth" id="authCard">
-        <h2 id="formTitle">Create your account</h2>
-        <p class="hint" id="formHint">Register with your email and Minecraft username to get started.</p>
+    <div class="section-title">
+      <div><h2>Player Area</h2><p>Account access and player information</p></div>
+    </div>
+
+    <section class="grid">
+      <div class="card" id="authCard">
+        <div id="authHeading">
+          <h2>Welcome back</h2>
+          <p class="sub">Sign in to your account or create a new player account.</p>
+        </div>
+        <div class="tabs" id="authTabs">
+          <button type="button" class="tab active" id="loginTab">Log In</button>
+          <button type="button" class="tab" id="signupTab">Sign Up</button>
+        </div>
         <form id="authForm">
-          <div id="usernameWrap">
-            <label for="mcname">Minecraft username</label>
-            <input id="mcname" name="mcname" autocomplete="username" maxlength="16" placeholder="YourMinecraftName" pattern="[A-Za-z0-9_]{3,16}">
+          <div id="usernameField" class="hidden">
+            <label for="minecraftUsername">Minecraft Username</label>
+            <input id="minecraftUsername" name="minecraftUsername" type="text" maxlength="16" autocomplete="nickname" placeholder="Your Minecraft name" pattern="[A-Za-z0-9_]{3,16}">
           </div>
-          <label for="email">Email address</label>
+          <label for="email">Email Address</label>
           <input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
           <label for="password">Password</label>
-          <input id="password" name="password" type="password" autocomplete="current-password" minlength="6" placeholder="At least 6 characters" required>
-          <button id="submitBtn" type="submit">Create account</button>
+          <input id="password" name="password" type="password" minlength="6" autocomplete="current-password" placeholder="At least 6 characters" required>
+          <button class="btn" id="submitBtn" type="submit">Log In</button>
         </form>
-        <div class="switch" id="switchText">Already registered? <button class="link" type="button" id="switchBtn">Sign in</button></div>
-        <div class="message" id="authMessage" role="status" aria-live="polite"></div>
-      </section>
+        <div id="authMessage" class="message" role="status" aria-live="polite"></div>
+        <p class="notice">Never share your password with anyone. Scarlet SMP staff will not ask you to send your password in chat.</p>
+      </div>
 
-      <section class="card account" id="accountCard">
-        <h2>Your player dashboard</h2>
-        <p class="hint">You are signed in to Scarlet SMP.</p>
-        <div class="profile-top">
-          <div class="avatar">⚔</div>
-          <div><strong id="displayName">Player</strong><p id="displayEmail"></p></div>
+      <div class="card" id="accountCard">
+        <div class="account-top">
+          <div><h2>Player Dashboard</h2><p class="sub">Your account overview</p></div>
+          <span class="pill"><span class="dot"></span> Account area</span>
         </div>
-        <div class="stat"><div class="stat-label">SCARLET COIN BALANCE</div><div class="stat-value">Not connected yet</div></div>
-        <div class="notice">Your account login is connected. The live coin balance and redeem-to-Minecraft feature still need a secure backend/server integration; this page will not invent or change coin balances.</div>
-        <button class="secondary" id="logoutBtn" type="button">Sign out</button>
-        <div class="message" id="accountMessage" role="status" aria-live="polite"></div>
-      </section>
+        <div id="signedOutPanel">
+          <div class="feature-list">
+            <div class="feature"><div class="feature-icon">🔐</div><div><strong>Secure account</strong><span>Sign in with your email and password.</span></div></div>
+            <div class="feature"><div class="feature-icon">⛏️</div><div><strong>Minecraft profile</strong><span>Your Minecraft username is saved to your player profile after login.</span></div></div>
+            <div class="feature"><div class="feature-icon">🪙</div><div><strong>Coins and rewards</strong><span>Coin balance and redemption need a connected, secure game backend.</span></div></div>
+          </div>
+        </div>
+        <div id="signedInPanel" class="hidden">
+          <div class="profile-name" id="displayUsername">Player</div>
+          <div class="muted" id="displayEmail">—</div>
+          <div class="stats">
+            <div class="stat"><span>Player profile</span><strong id="profileStatus">Saving…</strong></div>
+            <div class="stat"><span>Coin balance</span><strong>Not connected</strong></div>
+          </div>
+          <div id="profileMessage" class="message" role="status" aria-live="polite"></div>
+          <div class="notice">Your account login and player profile can work independently from Minecraft server coin syncing. Do not treat the displayed coin status as a live balance.</div>
+          <button class="btn secondary" id="logoutBtn" type="button">Log Out</button>
+        </div>
+      </div>
 
-      <section class="card">
-        <h2>Portal features</h2>
-        <p class="hint">A home for your Scarlet SMP player account.</p>
-        <div class="features" style="grid-template-columns:1fr">
-          <div class="feature"><div class="emoji">🛡️</div><strong>Account access</strong><p>Register and sign in with your email and password.</p></div>
-          <div class="feature"><div class="emoji">⛏️</div><strong>Minecraft profile</strong><p>Save your Minecraft username during registration.</p></div>
-          <div class="feature"><div class="emoji">🪙</div><strong>Coin system</strong><p>Wallet balance and redemptions become active after secure server-side integration.</p></div>
+      <div class="card">
+        <h2>Wallet & Coins</h2>
+        <p class="sub">The wallet area is ready for a future server connection.</p>
+        <div class="feature-list">
+          <div class="feature"><div class="feature-icon">🪙</div><div><strong>Live coin balance</strong><span>Not connected yet. This must read from a trusted backend, not a value users can edit in their browser.</span></div></div>
+          <div class="feature"><div class="feature-icon">🎁</div><div><strong>Redeem rewards</strong><span>Redemption commands and balance checks need server-side validation before they can be enabled.</span></div></div>
         </div>
-      </section>
-    </div>
-    <footer>SCARLET SMP · Unofficial player portal</footer>
-  </div>
+      </div>
+
+      <div class="card">
+        <h2>Store & Rewards</h2>
+        <p class="sub">A place for future Scarlet SMP rewards.</p>
+        <div class="feature-list">
+          <div class="feature"><div class="feature-icon">✨</div><div><strong>Player rewards</strong><span>Store items can be listed here once the reward catalogue and delivery system are configured.</span></div></div>
+          <div class="feature"><div class="feature-icon">🛡️</div><div><strong>Protected actions</strong><span>Purchases and redemptions should be confirmed by a secure server or backend.</span></div></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-inner"><span>© <span id="year"></span> Scarlet SMP</span><span>Unofficial player portal interface</span></div>
+  </footer>
 
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-    const SUPABASE_URL = "https://vpiuejwgubbqybairtkq.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_rB3-zv2cmehgJRu7kWIvyA_HZ2vJrYh";
+    // These are the project's public browser credentials. Never put a service_role/secret key here.
+    const SUPABASE_URL = 'https://vpiuejwgubbqybairtkq.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_rB3-zv2cmehgJRu7kWIvyA_HZ2vJrYh';
+    const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const authForm = document.getElementById('authForm');
-    const authCard = document.getElementById('authCard');
-    const accountCard = document.getElementById('accountCard');
-    const usernameWrap = document.getElementById('usernameWrap');
-    const mcname = document.getElementById('mcname');
-    const email = document.getElementById('email');
-    const password = document.getElementById('password');
+    const authTabs = document.getElementById('authTabs');
+    const loginTab = document.getElementById('loginTab');
+    const signupTab = document.getElementById('signupTab');
+    const usernameField = document.getElementById('usernameField');
+    const minecraftUsername = document.getElementById('minecraftUsername');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
     const submitBtn = document.getElementById('submitBtn');
     const authMessage = document.getElementById('authMessage');
-    const accountMessage = document.getElementById('accountMessage');
-    let isSignUp = true;
+    const signedOutPanel = document.getElementById('signedOutPanel');
+    const signedInPanel = document.getElementById('signedInPanel');
+    const displayUsername = document.getElementById('displayUsername');
+    const displayEmail = document.getElementById('displayEmail');
+    const profileStatus = document.getElementById('profileStatus');
+    const profileMessage = document.getElementById('profileMessage');
+    const logoutBtn = document.getElementById('logoutBtn');
 
-    function showMessage(el, text, type = 'info') {
-      el.textContent = text;
-      el.className = `message show ${type}`;
+    let mode = 'login';
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    function showMessage(element, message, type = 'info') {
+      element.textContent = message;
+      element.className = `message show ${type}`;
     }
-    function clearMessage(el) {
-      el.textContent = '';
-      el.className = 'message';
+
+    function clearMessage(element) {
+      element.textContent = '';
+      element.className = 'message';
     }
-    function setMode(signUp) {
-      isSignUp = signUp;
+
+    function setMode(nextMode) {
+      mode = nextMode;
+      const isSignup = mode === 'signup';
+      loginTab.classList.toggle('active', !isSignup);
+      signupTab.classList.toggle('active', isSignup);
+      usernameField.classList.toggle('hidden', !isSignup);
+      minecraftUsername.required = isSignup;
+      passwordInput.autocomplete = isSignup ? 'new-password' : 'current-password';
+      submitBtn.textContent = isSignup ? 'Create Account' : 'Log In';
+      document.querySelector('#authHeading h2').textContent = isSignup ? 'Create your account' : 'Welcome back';
+      document.querySelector('#authHeading .sub').textContent = isSignup
+        ? 'Use your email and Minecraft username to register.'
+        : 'Sign in to your Scarlet SMP player account.';
       clearMessage(authMessage);
-      document.getElementById('formTitle').textContent = signUp ? 'Create your account' : 'Welcome back';
-      document.getElementById('formHint').textContent = signUp
-        ? 'Register with your email and Minecraft username to get started.'
-        : 'Sign in with the email and password you registered with.';
-      usernameWrap.style.display = signUp ? 'block' : 'none';
-      mcname.required = signUp;
-      submitBtn.textContent = signUp ? 'Create account' : 'Sign in';
-      document.getElementById('switchText').firstChild.textContent = signUp ? 'Already registered? ' : 'New to Scarlet SMP? ';
-      document.getElementById('switchBtn').textContent = signUp ? 'Sign in' : 'Create account';
-      password.autocomplete = signUp ? 'new-password' : 'current-password';
     }
-    document.getElementById('switchBtn').addEventListener('click', () => setMode(!isSignUp));
 
-    function showAccount(user) {
-      authCard.classList.add('hide');
-      accountCard.classList.add('show');
-      const metadata = user.user_metadata || {};
-      document.getElementById('displayName').textContent = metadata.minecraft_username || 'Scarlet Player';
-      document.getElementById('displayEmail').textContent = user.email || '';
+    loginTab.addEventListener('click', () => setMode('login'));
+    signupTab.addEventListener('click', () => setMode('signup'));
+
+    function showLoggedOut() {
+      signedInPanel.classList.add('hidden');
+      signedOutPanel.classList.remove('hidden');
+      authTabs.classList.remove('hidden');
+      authForm.classList.remove('hidden');
+      document.getElementById('authHeading').classList.remove('hidden');
     }
-    function showAuth() {
-      accountCard.classList.remove('show');
-      authCard.classList.remove('hide');
+
+    function showLoggedIn(user) {
+      signedOutPanel.classList.add('hidden');
+      signedInPanel.classList.remove('hidden');
+      authTabs.classList.add('hidden');
+      authForm.classList.add('hidden');
+      document.getElementById('authHeading').classList.add('hidden');
+      displayEmail.textContent = user.email || 'Email unavailable';
+      const username = user.user_metadata?.minecraft_username || 'Minecraft username not found';
+      displayUsername.textContent = username;
+      profileStatus.textContent = 'Saving…';
+      clearMessage(profileMessage);
+    }
+
+    async function savePlayerProfile(user) {
+      const username = user.user_metadata?.minecraft_username;
+      if (!username) {
+        profileStatus.textContent = 'Needs username';
+        showMessage(profileMessage, 'This account does not have a Minecraft username saved in its sign-up details. Tell us this message and we can add a way to update it.', 'info');
+        return;
+      }
+
+      const { error } = await supabase
+        .from('player_profiles')
+        .upsert(
+          { user_id: user.id, minecraft_username: username },
+          { onConflict: 'user_id' }
+        );
+
+      if (error) {
+        profileStatus.textContent = 'Not saved';
+        showMessage(profileMessage, `Could not save your profile: ${error.message}`, 'error');
+        return;
+      }
+
+      profileStatus.textContent = 'Saved';
+      showMessage(profileMessage, 'Your Minecraft username was saved to your player profile.', 'success');
+    }
+
+    async function finishLogin(user) {
+      showLoggedIn(user);
+      await savePlayerProfile(user);
     }
 
     authForm.addEventListener('submit', async (event) => {
       event.preventDefault();
       clearMessage(authMessage);
       submitBtn.disabled = true;
-      submitBtn.textContent = isSignUp ? 'Creating account…' : 'Signing in…';
+      submitBtn.textContent = mode === 'signup' ? 'Creating account…' : 'Logging in…';
+
       try {
-        const emailValue = email.value.trim();
-        const passwordValue = password.value;
-        if (isSignUp) {
-          const username = mcname.value.trim();
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+
+        if (mode === 'signup') {
+          const username = minecraftUsername.value.trim();
           if (!/^[A-Za-z0-9_]{3,16}$/.test(username)) {
-            throw new Error('Minecraft username must be 3–16 characters and use only letters, numbers, or underscores.');
+            showMessage(authMessage, 'Minecraft username must be 3–16 characters and use only letters, numbers, or underscores.', 'error');
+            return;
           }
+
           const { data, error } = await supabase.auth.signUp({
-            email: emailValue,
-            password: passwordValue,
+            email,
+            password,
             options: { data: { minecraft_username: username } }
           });
-          if (error) throw error;
+
+          if (error) {
+            showMessage(authMessage, error.message, 'error');
+            return;
+          }
+
           if (data.session && data.user) {
-            showAccount(data.user);
+            showMessage(authMessage, 'Account created successfully.', 'success');
+            await finishLogin(data.user);
           } else {
-            showMessage(authMessage, 'Account created. Check your email for the confirmation link, then return here and sign in.', 'success');
-            setMode(false);
+            showMessage(authMessage, 'Account created. Check your email for the confirmation link, confirm it, then return here and log in.', 'success');
+            setMode('login');
           }
         } else {
-          const { data, error } = await supabase.auth.signInWithPassword({
-            email: emailValue,
-            password: passwordValue
-          });
-          if (error) throw error;
-          if (data.user) showAccount(data.user);
-          showMessage(accountMessage, 'You are signed in successfully.', 'success');
+          const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+          if (error) {
+            showMessage(authMessage, error.message, 'error');
+            return;
+          }
+          if (data.user) {
+            showMessage(authMessage, 'Login successful.', 'success');
+            await finishLogin(data.user);
+          }
         }
       } catch (error) {
-        showMessage(authMessage, error.message || 'Something went wrong. Please try again.', 'error');
+        showMessage(authMessage, error?.message || 'Something went wrong. Please try again.', 'error');
       } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = isSignUp ? 'Create account' : 'Sign in';
+        submitBtn.textContent = mode === 'signup' ? 'Create Account' : 'Log In';
       }
     });
 
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        showMessage(accountMessage, error.message, 'error');
-        return;
-      }
-      clearMessage(accountMessage);
-      showAuth();
-      setMode(false);
-      showMessage(authMessage, 'You have signed out.', 'success');
-    });
-
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session?.user) showAccount(session.user);
-    supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) showAccount(session.user);
-    });
-  </script>
-</body>
-    </html>
+    logoutBtn.addEventListener('click', async () => {
+      logoutBtn.disabled = true;
+      try {
+        const { error } = await supabase.auth.signOut();
+        if (error) {
+          showMessage(profileMessage, error.message, 'error');
+          return;
+        }
+        showLoggedOut();
+        setMode('login');
+          
